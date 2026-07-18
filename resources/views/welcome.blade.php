@@ -10,24 +10,23 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
         
-        <!-- Vite (Tailwind v4) -->
-        @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
-            @vite(['resources/css/app.css', 'resources/js/app.js'])
-        @else
-            <script>
-                window.tailwind = {
-                    config: {
-                        theme: {
-                            extend: {
-                                fontFamily: { sans: ['Outfit', 'sans-serif'] },
-                                colors: { brand: { 50: '#eef2ff', 100: '#e0e7ff', 300: '#a5b4fc', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca', 900: '#312e81' } }
-                            }
-                        }
-                    }
-                }
-            </script>
-            <script src="https://cdn.tailwindcss.com"></script>
-        @endif
+        <!-- Tailwind V4 CDN -->
+        <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+        <style type="text/tailwindcss">
+            @theme {
+                --font-sans: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+                --color-brand-50: #eef2ff;
+                --color-brand-100: #e0e7ff;
+                --color-brand-200: #c7d2fe;
+                --color-brand-300: #a5b4fc;
+                --color-brand-400: #818cf8;
+                --color-brand-500: #6366f1;
+                --color-brand-600: #4f46e5;
+                --color-brand-700: #4338ca;
+                --color-brand-800: #3730a3;
+                --color-brand-900: #312e81;
+            }
+        </style>
         
         <style>
             body { font-family: 'Outfit', sans-serif; }

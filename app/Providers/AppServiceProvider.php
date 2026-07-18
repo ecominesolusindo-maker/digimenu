@@ -24,9 +24,17 @@ class AppServiceProvider extends ServiceProvider
     {
         Order::observe(OrderObserver::class);
 
-        if (config('app.env') === 'production') {
-    \Illuminate\Support\Facades\URL::forceScheme('https');
-}
+        // Force HTTPS when behind a proxy (like Railway)
+        if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        } else if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
+        
+        // As a fallback for Railway, if we are on a railway domain, force it
+        if (str_contains(request()->getHost(), 'railway.app')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
 
     }
 }
