@@ -25,7 +25,8 @@ class AppServiceProvider extends ServiceProvider
         Order::observe(OrderObserver::class);
 
         if (config('app.env') === 'production') {
-            \Illuminate\Support\Facades\URL::forceScheme('https');
-        }
+    \Illuminate\Support\Facades\URL::forceScheme('https');
+}
+
     }
 }
