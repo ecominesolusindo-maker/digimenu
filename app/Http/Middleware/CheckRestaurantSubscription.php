@@ -17,6 +17,11 @@ class CheckRestaurantSubscription
     {
         $user = $request->user();
 
+        // Always allow logout requests to pass through
+        if ($request->routeIs('filament.owner.auth.logout') || $request->is('owner/logout')) {
+            return $next($request);
+        }
+
         if ($user && $user->role === 'owner') {
             $restaurant = $user->restaurant;
 
