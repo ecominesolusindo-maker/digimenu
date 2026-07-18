@@ -10,29 +10,39 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
         
-        <!-- Styles / Scripts -->
+        <!-- Vite (Tailwind v4) -->
         @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
             @vite(['resources/css/app.css', 'resources/js/app.js'])
         @else
-            <script src="https://cdn.tailwindcss.com"></script>
             <script>
-                tailwind.config = {
-                    theme: {
-                        extend: {
-                            fontFamily: { sans: ['Outfit', 'sans-serif'] },
-                            colors: { brand: { 50: '#eef2ff', 100: '#e0e7ff', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' } }
+                window.tailwind = {
+                    config: {
+                        theme: {
+                            extend: {
+                                fontFamily: { sans: ['Outfit', 'sans-serif'] },
+                                colors: { brand: { 50: '#eef2ff', 100: '#e0e7ff', 300: '#a5b4fc', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca', 900: '#312e81' } }
+                            }
                         }
                     }
                 }
             </script>
+            <script src="https://cdn.tailwindcss.com"></script>
         @endif
         
         <style>
             body { font-family: 'Outfit', sans-serif; }
-            .glass-nav { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(226, 232, 240, 0.5); }
+            .glass-nav { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(226, 232, 240, 0.6); }
             .hero-bg { background: radial-gradient(circle at top right, #eef2ff 0%, #ffffff 50%, #fafafa 100%); }
             .feature-card { transition: all 0.3s ease; }
             .feature-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01); border-color: #e0e7ff; }
+            @keyframes blob {
+                0% { transform: translate(0px, 0px) scale(1); }
+                33% { transform: translate(30px, -50px) scale(1.1); }
+                66% { transform: translate(-20px, 20px) scale(0.9); }
+                100% { transform: translate(0px, 0px) scale(1); }
+            }
+            .animate-blob { animation: blob 7s infinite; }
+            .animation-delay-2000 { animation-delay: 2s; }
         </style>
     </head>
     <body class="bg-slate-50 text-slate-800 antialiased selection:bg-brand-500 selection:text-white">
@@ -48,8 +58,8 @@
                     <div class="hidden md:flex space-x-8 items-center">
                         <a href="#features" class="text-slate-600 hover:text-brand-600 font-medium transition">Features</a>
                         <a href="#pricing" class="text-slate-600 hover:text-brand-600 font-medium transition">Pricing</a>
-                        <a href="/admin" class="text-brand-600 font-semibold hover:text-brand-700 transition">Log in</a>
-                        <a href="/admin/register" class="bg-brand-600 hover:bg-brand-700 text-white px-6 py-2.5 rounded-full font-medium transition shadow-md shadow-brand-500/20 transform hover:-translate-y-0.5">Get Started</a>
+                        <a href="/login" class="text-brand-600 font-semibold hover:text-brand-700 transition">Log in</a>
+                        <a href="/owner/register" class="bg-brand-600 hover:bg-brand-700 text-white px-6 py-2.5 rounded-full font-medium transition shadow-md shadow-brand-500/20 transform hover:-translate-y-0.5">Get Started</a>
                     </div>
                 </div>
             </div>
@@ -77,7 +87,7 @@
                 </p>
                 
                 <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                    <a href="/admin/register" class="w-full sm:w-auto bg-brand-600 hover:bg-brand-700 text-white px-8 py-4 rounded-full font-semibold text-lg transition shadow-xl shadow-brand-500/30 transform hover:-translate-y-1 flex items-center justify-center gap-2">
+                    <a href="/owner/register" class="w-full sm:w-auto bg-brand-600 hover:bg-brand-700 text-white px-8 py-4 rounded-full font-semibold text-lg transition shadow-xl shadow-brand-500/30 transform hover:-translate-y-1 flex items-center justify-center gap-2">
                         Start for free
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                     </a>
@@ -179,7 +189,7 @@
             <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center relative z-10">
                 <h2 class="text-3xl font-extrabold text-white sm:text-4xl mb-6">Ready to transform your restaurant?</h2>
                 <p class="text-xl text-brand-100 mb-10 max-w-2xl mx-auto">Join hundreds of modern restaurants using RestoSaaS to streamline operations and boost sales.</p>
-                <a href="/admin/register" class="inline-flex items-center justify-center bg-white text-brand-900 font-bold px-8 py-4 rounded-full text-lg shadow-lg hover:bg-brand-50 transition transform hover:scale-105">
+                <a href="/owner/register" class="inline-flex items-center justify-center bg-white text-brand-900 font-bold px-8 py-4 rounded-full text-lg shadow-lg hover:bg-brand-50 transition transform hover:scale-105">
                     Start Your Free Trial
                 </a>
             </div>

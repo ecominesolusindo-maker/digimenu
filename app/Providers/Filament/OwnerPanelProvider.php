@@ -27,6 +27,7 @@ class OwnerPanelProvider extends PanelProvider
             ->id('owner')
             ->path('owner')
             ->login()
+            ->registration()
             ->font('Outfit')
             ->colors([
                 'primary' => Color::Indigo,

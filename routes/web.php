@@ -9,6 +9,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::redirect('/login', '/admin/login')->name('login');
+
 // Download QR Code Meja (hanya yang sudah login/admin, tapi biar gampang kita taruh di middleware auth atau diluar jika urlnya diamankan via route model binding/gate, sementara kita buat di luar dengan middleware default Filament auth jika memungkinkan)
 Route::middleware(['auth'])->group(function () {
     Route::get('/owner/tables/{table}/qr', TableQrController::class)->name('table.qr.download');
