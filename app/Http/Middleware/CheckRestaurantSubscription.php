@@ -24,11 +24,13 @@ class CheckRestaurantSubscription
                 return redirect()->route('subscription.expired')->with('error', 'No restaurant assigned to your account.');
             }
 
-            if (!$restaurant->is_active) {
+            // Check using subscription_status column (actual DB column)
+            if ($restaurant->subscription_status && $restaurant->subscription_status === 'suspended') {
                 return redirect()->route('subscription.expired')->with('error', 'Your restaurant account has been suspended.');
             }
 
-            if ($restaurant->subscription_expires_at && $restaurant->subscription_expires_at->isPast()) {
+            // Check trial expiry using trial_ends_at column (actual DB column)
+            if ($restaurant->trial_ends_at && \Carbon\Carbon::parse($restaurant->trial_ends_at)->isPast()) {
                 return redirect()->route('subscription.expired')->with('error', 'Your subscription has expired. Please contact sales.');
             }
         }
