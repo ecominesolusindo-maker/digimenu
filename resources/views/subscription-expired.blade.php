@@ -22,7 +22,7 @@
                 Return to Homepage
             </a>
             
-            <form method="POST" action="{{ route('filament.owner.auth.logout') }}" class="mt-4">
+            <form method="POST" action="/owner/logout" class="mt-4">
                 @csrf
                 <button type="submit" class="text-sm text-red-600 hover:underline">
                     Logout
