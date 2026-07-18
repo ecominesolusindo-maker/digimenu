@@ -31,10 +31,15 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Super Admin',
                 'password' => Hash::make('password'),
-                'role' => 'admin'
+                'role' => 'super_admin'
             ]
         );
         $admin->assignRole('Platform Admin');
+
+        // Also fix existing admin user if role is wrong
+        User::where('email', 'admin@restosaas.com')
+            ->where('role', '!=', 'super_admin')
+            ->update(['role' => 'super_admin']);
 
         // 3. Create 3 Restaurants
         for ($i = 1; $i <= 3; $i++) {
