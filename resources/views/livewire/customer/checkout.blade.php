@@ -48,11 +48,11 @@
                         <ul class="space-y-4">
                             @php $total = 0; @endphp
                             @foreach($cart as $item)
-                                @php $sub = $item['price'] * $item['quantity']; $total += $sub; @endphp
+                                @php $sub = $item['price'] * $item['qty']; $total += $sub; @endphp
                                 <li class="flex justify-between items-start gap-4">
                                     <div class="flex items-start gap-3 flex-1">
                                         <div class="w-6 h-6 rounded bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5">
-                                            {{ $item['quantity'] }}x
+                                            {{ $item['qty'] }}x
                                         </div>
                                         <div>
                                             <span class="font-semibold text-slate-900 leading-tight">{{ $item['name'] }}</span>
