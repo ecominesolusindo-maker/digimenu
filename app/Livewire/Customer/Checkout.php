@@ -51,10 +51,13 @@ class Checkout extends Component
         // Calculate total
         $total = array_sum(array_map(fn($i) => $i['qty'] * $i['price'], $this->cart));
 
+        $orderNumber = 'ORD-' . strtoupper(uniqid());
+
         // Create Order
         $order = Order::withoutGlobalScopes()->create([
             'restaurant_id'  => $this->restaurant->id,
             'table_id'       => $this->table ? $this->table->id : null,
+            'order_number'   => $orderNumber,
             'customer_name'  => $this->customerName,
             'customer_phone' => $this->customerPhone,
             'subtotal'       => $total,
