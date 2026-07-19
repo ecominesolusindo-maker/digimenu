@@ -63,7 +63,7 @@ class Checkout extends Component
             'order_number' => $orderNumber,
             'customer_name' => $this->customerName,
             'customer_phone' => $this->customerPhone,
-            'total_amount' => $total,
+            'total' => $total,
             'status' => 'pending', // Awaiting confirmation/payment
             'payment_status' => 'unpaid',
             'order_type' => $this->table ? 'dine_in' : 'takeaway',

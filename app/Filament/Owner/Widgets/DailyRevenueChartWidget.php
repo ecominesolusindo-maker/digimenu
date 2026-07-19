@@ -21,7 +21,7 @@ class DailyRevenueChartWidget extends ChartWidget
         // Get daily revenue
         $revenues = Order::select(
                 DB::raw('DATE(created_at) as date'),
-                DB::raw('SUM(total_amount) as total')
+                DB::raw('SUM(total) as total')
             )
             ->whereBetween('created_at', [$startDate->startOfDay(), $endDate->endOfDay()])
             ->where('payment_status', 'paid')

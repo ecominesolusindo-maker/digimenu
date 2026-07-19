@@ -15,7 +15,7 @@ class OrderForm
                 TextInput::make('order_number'),
                 TextInput::make('customer_name'),
                 TextInput::make('status'),
-                TextInput::make('total_amount'),
+                TextInput::make('total'),
                 Repeater::make('orderItems')
                     ->relationship('orderItems')
                     ->schema([

@@ -25,7 +25,7 @@ class OrdersTable
                     'served' => 'gray',
                     default => 'gray',
                 }),
-                TextColumn::make('total_amount')->money('idr')->sortable(),
+                TextColumn::make('total')->money('idr')->sortable()->label('Total'),
                 TextColumn::make('created_at')->dateTime()->sortable(),
             ])->defaultSort('created_at', 'desc')
             ->filters([

@@ -91,7 +91,7 @@ class PosPage extends Page
             'order_number' => 'ORD-' . strtoupper(uniqid()),
             'customer_name' => $this->customerName ?: 'Walk-in Customer',
             'table_id' => $this->orderType === 'dine_in' ? $this->selectedTable : null,
-            'total_amount' => $total,
+            'total' => $total,
             'status' => 'pending',
             'payment_status' => 'paid',
             'order_type' => $this->orderType,

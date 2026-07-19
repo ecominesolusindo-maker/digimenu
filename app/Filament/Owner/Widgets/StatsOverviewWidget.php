@@ -21,7 +21,7 @@ class StatsOverviewWidget extends BaseWidget
         $revenueToday = Order::whereDate('created_at', $today)
             ->where('payment_status', 'paid')
             ->where('restaurant_id', $restaurantId)
-            ->sum('total_amount');
+            ->sum('total');
             
         // Orders Today
         $ordersToday = Order::whereDate('created_at', $today)

@@ -51,7 +51,7 @@ class PaymentWebhookController extends Controller
             Payment::withoutGlobalScopes()->create([
                 'restaurant_id' => $order->restaurant_id,
                 'order_id' => $order->id,
-                'amount' => $grossAmount ?: $order->total_amount,
+                'amount' => $grossAmount ?: $order->total,
                 'payment_method' => $paymentType,
                 'status' => 'completed',
             ]);
@@ -62,7 +62,7 @@ class PaymentWebhookController extends Controller
             Payment::withoutGlobalScopes()->create([
                 'restaurant_id' => $order->restaurant_id,
                 'order_id' => $order->id,
-                'amount' => $grossAmount ?: $order->total_amount,
+                'amount' => $grossAmount ?: $order->total,
                 'payment_method' => $paymentType,
                 'status' => 'failed',
             ]);
