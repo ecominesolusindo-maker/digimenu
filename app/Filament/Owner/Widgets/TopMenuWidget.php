@@ -16,14 +16,17 @@ class TopMenuWidget extends BaseWidget
 
     public function table(Table $table): Table
     {
+        $restaurantId = auth()->user()?->restaurant_id;
+
         return $table
             ->query(
                 MenuItem::query()
-                    ->select('menu_items.*', DB::raw('SUM(order_items.quantity) as total_sold'))
+                    ->select('menu_items.*', DB::raw('SUM(order_items.qty) as total_sold'))
                     ->join('order_items', 'menu_items.id', '=', 'order_items.menu_item_id')
                     ->join('orders', 'order_items.order_id', '=', 'orders.id')
                     ->where('orders.payment_status', 'paid')
-                    ->groupBy('menu_items.id')
+                    ->where('menu_items.restaurant_id', $restaurantId)
+                    ->groupBy('menu_items.id', 'menu_items.name', 'menu_items.price', 'menu_items.restaurant_id', 'menu_items.category_id', 'menu_items.image', 'menu_items.description', 'menu_items.is_available', 'menu_items.created_at', 'menu_items.updated_at')
                     ->orderBy('total_sold', 'desc')
                     ->limit(5)
             )

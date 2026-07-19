@@ -16,6 +16,7 @@ class DailyRevenueChartWidget extends ChartWidget
     {
         $startDate = Carbon::today()->subDays(6);
         $endDate = Carbon::today();
+        $restaurantId = auth()->user()?->restaurant_id;
 
         // Get daily revenue
         $revenues = Order::select(
@@ -24,8 +25,9 @@ class DailyRevenueChartWidget extends ChartWidget
             )
             ->whereBetween('created_at', [$startDate->startOfDay(), $endDate->endOfDay()])
             ->where('payment_status', 'paid')
-            ->groupBy('date')
-            ->orderBy('date')
+            ->where('restaurant_id', $restaurantId)
+            ->groupBy(DB::raw('DATE(created_at)'))
+            ->orderBy(DB::raw('DATE(created_at)'))
             ->get()
             ->keyBy('date');
 

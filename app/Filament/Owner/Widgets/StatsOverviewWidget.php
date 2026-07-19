@@ -15,19 +15,25 @@ class StatsOverviewWidget extends BaseWidget
     protected function getStats(): array
     {
         $today = Carbon::today();
+        $restaurantId = auth()->user()?->restaurant_id;
         
         // Revenue Today
         $revenueToday = Order::whereDate('created_at', $today)
             ->where('payment_status', 'paid')
+            ->where('restaurant_id', $restaurantId)
             ->sum('total_amount');
             
         // Orders Today
-        $ordersToday = Order::whereDate('created_at', $today)->count();
+        $ordersToday = Order::whereDate('created_at', $today)
+            ->where('restaurant_id', $restaurantId)
+            ->count();
         
         // Items Sold Today
-        $itemsSoldToday = OrderItem::whereHas('order', function($q) use ($today) {
-                $q->whereDate('created_at', $today)->where('payment_status', 'paid');
-            })->sum('quantity');
+        $itemsSoldToday = OrderItem::whereHas('order', function($q) use ($today, $restaurantId) {
+                $q->whereDate('created_at', $today)
+                  ->where('payment_status', 'paid')
+                  ->where('restaurant_id', $restaurantId);
+            })->sum('qty');
 
         return [
             Stat::make('Revenue Today', 'Rp ' . number_format($revenueToday, 0, ',', '.'))
