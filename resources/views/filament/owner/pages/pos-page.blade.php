@@ -1,113 +1,193 @@
 <x-filament-panels::page>
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+    <style>
+        .pos-container { display: flex; flex-direction: column; gap: 1.5rem; }
+        @media (min-width: 1024px) { .pos-container { flex-direction: row; align-items: flex-start; } }
         
-        <!-- Menu Catalog (Left, 2 cols) -->
-        <div class="lg:col-span-2 flex flex-col space-y-6">
-            <!-- Search -->
-            <x-filament::input.wrapper>
-                <x-filament::input type="text" wire:model.live.debounce.300ms="search" placeholder="Search menu..." />
-            </x-filament::input.wrapper>
+        .pos-left { flex: 1; display: flex; flex-direction: column; gap: 1.5rem; width: 100%; }
+        .pos-right { width: 100%; position: sticky; top: 1.5rem; }
+        @media (min-width: 1024px) { .pos-right { width: 380px; flex-shrink: 0; } }
+
+        /* Search Bar */
+        .pos-search {
+            width: 100%; padding: 0.875rem 1.25rem; border-radius: 1rem;
+            border: 1px solid rgba(156, 163, 175, 0.3); background: var(--bg-color, #fff);
+            font-size: 1rem; outline: none; transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+        .dark .pos-search { background: #1f2937; color: #fff; border-color: rgba(255,255,255,0.1); }
+        .pos-search:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); }
+
+        /* Grid */
+        .pos-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 1rem; max-height: calc(100vh - 200px); overflow-y: auto; padding-right: 0.5rem;
+        }
+
+        /* Card */
+        .pos-card {
+            background: var(--bg-color, #fff); border-radius: 1rem; overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid rgba(156, 163, 175, 0.2);
+            cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex; flex-direction: column;
+        }
+        .dark .pos-card { background: #1f2937; border-color: rgba(255,255,255,0.05); }
+        .pos-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); border-color: #6366f1; }
+
+        .pos-card-img { width: 100%; height: 120px; object-fit: cover; background: #f3f4f6; }
+        .dark .pos-card-img { background: #374151; }
+        
+        .pos-card-body { padding: 0.75rem; display: flex; flex-direction: column; gap: 0.25rem; }
+        .pos-card-title { font-weight: 700; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-color, #111827); }
+        .dark .pos-card-title { color: #f9fafb; }
+        .pos-card-price { font-weight: 800; font-size: 0.95rem; color: #6366f1; }
+
+        /* Cart Section */
+        .pos-cart {
+            background: var(--bg-color, #fff); border-radius: 1.25rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); border: 1px solid rgba(156, 163, 175, 0.2);
+            display: flex; flex-direction: column; overflow: hidden;
+        }
+        .dark .pos-cart { background: #1f2937; border-color: rgba(255,255,255,0.05); }
+        
+        .pos-cart-header { padding: 1.25rem; border-bottom: 1px solid rgba(156, 163, 175, 0.2); font-weight: 800; font-size: 1.25rem; }
+        .dark .pos-cart-header { border-bottom-color: rgba(255,255,255,0.1); color: #fff; }
+
+        .pos-cart-items { max-height: 40vh; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: 0.75rem; }
+        
+        .pos-cart-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0.75rem; background: #f9fafb; border-radius: 0.75rem;
+            border: 1px solid rgba(156, 163, 175, 0.2);
+        }
+        .dark .pos-cart-item { background: #111827; border-color: rgba(255,255,255,0.05); }
+
+        .pos-cart-item-info { flex: 1; overflow: hidden; }
+        .pos-cart-item-title { font-weight: 700; font-size: 0.9rem; color: #111827; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .dark .pos-cart-item-title { color: #fff; }
+        .pos-cart-item-price { font-size: 0.8rem; color: #6366f1; font-weight: 700; }
+
+        .pos-qty-controls { display: flex; align-items: center; gap: 0.5rem; background: #fff; padding: 0.25rem; border-radius: 0.5rem; border: 1px solid rgba(156, 163, 175, 0.3); }
+        .dark .pos-qty-controls { background: #1f2937; border-color: rgba(255,255,255,0.1); }
+        .pos-qty-btn { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; background: #f3f4f6; border-radius: 0.375rem; border: none; cursor: pointer; color: #374151; font-weight: bold; }
+        .dark .pos-qty-btn { background: #374151; color: #e5e7eb; }
+        .pos-qty-btn:hover { background: #e5e7eb; }
+        .dark .pos-qty-btn:hover { background: #4b5563; }
+        .pos-qty-value { font-weight: 800; font-size: 0.9rem; min-width: 1.5rem; text-align: center; color: #111827; }
+        .dark .pos-qty-value { color: #fff; }
+
+        /* Checkout Area */
+        .pos-checkout { padding: 1.25rem; border-top: 1px solid rgba(156, 163, 175, 0.2); display: flex; flex-direction: column; gap: 1rem; }
+        .dark .pos-checkout { border-top-color: rgba(255,255,255,0.1); }
+
+        .pos-tabs { display: flex; background: #f3f4f6; padding: 0.25rem; border-radius: 0.75rem; }
+        .dark .pos-tabs { background: #111827; }
+        .pos-tab { flex: 1; padding: 0.5rem; text-align: center; border-radius: 0.5rem; font-weight: 700; font-size: 0.9rem; cursor: pointer; border: none; background: transparent; color: #6b7280; transition: all 0.2s; }
+        .pos-tab.active { background: #fff; color: #6366f1; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .dark .pos-tab.active { background: #374151; color: #818cf8; }
+
+        .pos-total-row { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; }
+        .pos-total-label { font-size: 1rem; font-weight: 600; color: #6b7280; }
+        .dark .pos-total-label { color: #9ca3af; }
+        .pos-total-value { font-size: 1.5rem; font-weight: 900; color: #6366f1; }
+
+        .pos-pay-btn {
+            width: 100%; padding: 1rem; border-radius: 0.75rem; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white; font-weight: 800; font-size: 1.1rem; border: none; cursor: pointer;
+            box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.4); transition: all 0.3s;
+        }
+        .pos-pay-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.5); }
+        .pos-pay-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+    </style>
+
+    <div class="pos-container">
+        
+        <!-- Menu Catalog (Left) -->
+        <div class="pos-left">
+            <input type="text" wire:model.live.debounce.300ms="search" placeholder="🔍 Search menu items..." class="pos-search">
             
-            <!-- Items Grid -->
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 h-[calc(100vh-16rem)] overflow-y-auto pr-2 pb-4">
+            <div class="pos-grid">
                 @forelse($menuItems as $item)
-                    <div wire:click="addToCart({{ $item->id }})" class="cursor-pointer bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200 dark:border-white/10 overflow-hidden hover:ring-2 hover:ring-primary-500 transition duration-200 group">
-                        <div class="w-full h-36 bg-gray-100 dark:bg-gray-800 relative overflow-hidden">
-                            @if($item->image)
-                                <img src="{{ asset('storage/' . $item->image) }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-                            @else
-                                <div class="w-full h-full flex items-center justify-center text-gray-400">
-                                    <x-filament::icon icon="heroicon-o-photo" class="w-10 h-10 text-gray-300 dark:text-gray-600" />
-                                </div>
-                            @endif
-                            <div class="absolute top-2 right-2 bg-primary-600 text-white text-xs font-bold px-2 py-1 rounded-lg shadow">
-                                Rp {{ number_format($item->price, 0, ',', '.') }}
+                    <div wire:click="addToCart({{ $item->id }})" class="pos-card">
+                        @if($item->image)
+                            <img src="{{ asset('storage/' . $item->image) }}" class="pos-card-img" alt="{{ $item->name }}">
+                        @else
+                            <div class="pos-card-img" style="display: flex; align-items: center; justify-content: center; color: #9ca3af;">
+                                <svg style="width: 2rem; height: 2rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                             </div>
-                        </div>
-                        <div class="p-4">
-                            <h3 class="font-bold text-sm text-gray-900 dark:text-white group-hover:text-primary-600 transition truncate">{{ $item->name }}</h3>
+                        @endif
+                        <div class="pos-card-body">
+                            <div class="pos-card-title">{{ $item->name }}</div>
+                            <div class="pos-card-price">Rp {{ number_format($item->price, 0, ',', '.') }}</div>
                         </div>
                     </div>
                 @empty
-                    <div class="col-span-full flex flex-col items-center justify-center py-12 text-gray-400">
-                        <x-filament::icon icon="heroicon-o-x-circle" class="w-12 h-12 mb-3 opacity-50" />
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: #9ca3af;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">🍽️</div>
                         <p>No menu items found.</p>
                     </div>
                 @endforelse
             </div>
         </div>
 
-        <!-- Cart (Right, 1 col) -->
-        <x-filament::section class="sticky top-6">
-            <x-slot name="heading">
-                Current Order
-            </x-slot>
-            
-            <!-- Cart Items -->
-            <div class="max-h-[40vh] overflow-y-auto pr-2 space-y-3 -mt-2 mb-4">
-                @forelse($cart as $index => $item)
-                    <div class="flex justify-between items-center bg-gray-50 dark:bg-white/5 p-3 rounded-xl border border-gray-100 dark:border-white/5">
-                        <div class="flex-1 truncate pr-3">
-                            <p class="font-bold text-sm text-gray-900 dark:text-white truncate">{{ $item['name'] }}</p>
-                            <p class="text-xs text-primary-600 font-bold mt-0.5">Rp {{ number_format($item['price'], 0, ',', '.') }}</p>
+        <!-- Cart (Right) -->
+        <div class="pos-right">
+            <div class="pos-cart">
+                <div class="pos-cart-header">
+                    🛒 Current Order
+                </div>
+                
+                <div class="pos-cart-items">
+                    @forelse($cart as $index => $item)
+                        <div class="pos-cart-item">
+                            <div class="pos-cart-item-info">
+                                <div class="pos-cart-item-title">{{ $item['name'] }}</div>
+                                <div class="pos-cart-item-price">Rp {{ number_format($item['price'], 0, ',', '.') }}</div>
+                            </div>
+                            <div class="pos-qty-controls">
+                                <button wire:click="updateQuantity({{ $index }}, 'decrease')" class="pos-qty-btn">-</button>
+                                <span class="pos-qty-value">{{ $item['quantity'] }}</span>
+                                <button wire:click="updateQuantity({{ $index }}, 'increase')" class="pos-qty-btn">+</button>
+                            </div>
                         </div>
-                        <div class="flex items-center space-x-3 bg-white dark:bg-gray-800 rounded-lg p-1 border border-gray-200 dark:border-white/10">
-                            <button wire:click="updateQuantity({{ $index }}, 'decrease')" class="p-1 text-gray-500 hover:text-red-500 transition">
-                                <x-filament::icon icon="heroicon-o-minus" class="w-4 h-4" />
-                            </button>
-                            <span class="w-5 text-center font-bold text-sm text-gray-900 dark:text-white">{{ $item['quantity'] }}</span>
-                            <button wire:click="updateQuantity({{ $index }}, 'increase')" class="p-1 text-gray-500 hover:text-primary-500 transition">
-                                <x-filament::icon icon="heroicon-o-plus" class="w-4 h-4" />
-                            </button>
+                    @empty
+                        <div style="text-align: center; padding: 2rem; color: #9ca3af; font-style: italic;">
+                            Cart is empty
                         </div>
-                    </div>
-                @empty
-                    <div class="text-center py-8 text-gray-400">
-                        <x-filament::icon icon="heroicon-o-shopping-bag" class="w-12 h-12 mx-auto mb-2 opacity-50" />
-                        <p class="text-sm italic">Cart is empty</p>
-                    </div>
-                @endforelse
-            </div>
-
-            <!-- Checkout Section -->
-            <div class="pt-4 border-t border-gray-200 dark:border-white/10 space-y-4">
-                <div class="flex bg-gray-100 dark:bg-gray-900 rounded-lg p-1">
-                    <button wire:click="$set('orderType', 'dine_in')" class="flex-1 py-2 text-sm font-bold rounded-md transition {{ $orderType === 'dine_in' ? 'bg-white dark:bg-gray-700 text-primary-600 shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300' }}">
-                        Dine-in
-                    </button>
-                    <button wire:click="$set('orderType', 'takeaway')" class="flex-1 py-2 text-sm font-bold rounded-md transition {{ $orderType === 'takeaway' ? 'bg-white dark:bg-gray-700 text-primary-600 shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300' }}">
-                        Takeaway
-                    </button>
+                    @endforelse
                 </div>
 
-                @if($orderType === 'dine_in')
-                    <div>
-                        <select wire:model="selectedTable" class="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-white/10 text-gray-900 dark:text-white text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block p-2.5">
+                <div class="pos-checkout">
+                    <div class="pos-tabs">
+                        <button wire:click="$set('orderType', 'dine_in')" class="pos-tab {{ $orderType === 'dine_in' ? 'active' : '' }}">Dine-in</button>
+                        <button wire:click="$set('orderType', 'takeaway')" class="pos-tab {{ $orderType === 'takeaway' ? 'active' : '' }}">Takeaway</button>
+                    </div>
+
+                    @if($orderType === 'dine_in')
+                        <select wire:model="selectedTable" class="pos-search" style="padding: 0.6rem 1rem; border-radius: 0.75rem;">
                             <option value="">Select Table...</option>
                             @foreach($tables as $table)
                                 <option value="{{ $table->id }}">Table {{ $table->table_number }} ({{ $table->status }})</option>
                             @endforeach
                         </select>
+                    @endif
+
+                    <input type="text" wire:model="customerName" placeholder="Customer Name (Optional)" class="pos-search" style="padding: 0.6rem 1rem; border-radius: 0.75rem;">
+
+                    @php
+                        $total = collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']);
+                    @endphp
+                    
+                    <div class="pos-total-row">
+                        <span class="pos-total-label">Total</span>
+                        <span class="pos-total-value">Rp {{ number_format($total, 0, ',', '.') }}</span>
                     </div>
-                @endif
 
-                <x-filament::input.wrapper>
-                    <x-filament::input type="text" wire:model="customerName" placeholder="Customer Name (Optional)" />
-                </x-filament::input.wrapper>
-
-                @php
-                    $total = collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']);
-                @endphp
-                
-                <div class="flex justify-between items-center py-2">
-                    <span class="text-gray-500 dark:text-gray-400 font-medium">Total</span>
-                    <span class="text-2xl font-extrabold text-primary-600 dark:text-primary-400">Rp {{ number_format($total, 0, ',', '.') }}</span>
+                    <button wire:click="placeOrder" class="pos-pay-btn" wire:loading.attr="disabled">
+                        <span wire:loading.remove>Pay / Place Order</span>
+                        <span wire:loading>Processing...</span>
+                    </button>
                 </div>
-
-                <x-filament::button wire:click="placeOrder" color="primary" size="lg" class="w-full justify-center">
-                    Pay / Place Order
-                </x-filament::button>
             </div>
-        </x-filament::section>
+        </div>
     </div>
 </x-filament-panels::page>
