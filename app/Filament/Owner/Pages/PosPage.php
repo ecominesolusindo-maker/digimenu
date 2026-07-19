@@ -88,22 +88,24 @@ class PosPage extends Page
         $total = collect($this->cart)->sum(fn($item) => $item['price'] * $item['quantity']);
 
         $order = Order::create([
+            'restaurant_id' => auth()->user()->restaurant->id ?? 1, // Note: ensure restaurant_id is set
             'order_number' => 'ORD-' . strtoupper(uniqid()),
             'customer_name' => $this->customerName ?: 'Walk-in Customer',
             'table_id' => $this->orderType === 'dine_in' ? $this->selectedTable : null,
+            'subtotal' => $total,
             'total' => $total,
             'status' => 'pending',
             'payment_status' => 'paid',
             'order_type' => $this->orderType,
+            'source' => 'pos',
         ]);
 
         foreach ($this->cart as $item) {
             OrderItem::create([
                 'order_id' => $order->id,
                 'menu_item_id' => $item['id'],
-                'quantity' => $item['quantity'],
-                'unit_price' => $item['price'],
-                'subtotal' => $item['price'] * $item['quantity'],
+                'qty' => $item['quantity'], // PosPage cart uses 'quantity' locally
+                'price_at_order' => $item['price'],
             ]);
         }
 
