@@ -13,6 +13,7 @@ class Order extends Model
     protected $guarded = ['id'];
 
     public function items() { return $this->hasMany(OrderItem::class); }
+    public function orderItems() { return $this->hasMany(OrderItem::class); }
     public function table() { return $this->belongsTo(Table::class); }
     public function statusLogs() { return $this->hasMany(OrderStatusLog::class); }
     public function payment() { return $this->hasOne(Payment::class); }
