@@ -62,6 +62,14 @@ class User extends Authenticatable implements FilamentUser
             return $this->role === 'owner';
         }
 
+        if ($panel->getId() === 'cashier') {
+            return $this->role === 'cashier' || $this->role === 'owner' || $this->role === 'super_admin';
+        }
+
+        if ($panel->getId() === 'kitchen') {
+            return $this->role === 'kitchen' || $this->role === 'owner' || $this->role === 'super_admin';
+        }
+
         return false;
     }
 }
