@@ -42,9 +42,13 @@ class AppServiceProvider extends ServiceProvider
         // Auto-create storage symlink if it doesn't exist (crucial for Docker/Railway)
         if (!file_exists(public_path('storage'))) {
             try {
+                // If it's a broken symlink, unlink it first
+                if (is_link(public_path('storage'))) {
+                    unlink(public_path('storage'));
+                }
                 app('files')->link(storage_path('app/public'), public_path('storage'));
             } catch (\Exception $e) {
-                // Fail silently if permission denied, though Nixpacks usually allows it
+                // Fail silently if permission denied
             }
         }
 
