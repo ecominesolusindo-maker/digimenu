@@ -26,7 +26,7 @@ class Checkout extends Component
     public function mount($slug, $token = null)
     {
         $this->restaurant = Restaurant::where('slug', $slug)->firstOrFail();
-        $this->tableToken = $token;
+        $this->tableToken = $token === 'takeaway' ? null : $token;
 
         if ($this->tableToken) {
             $this->table = Table::withoutGlobalScopes()
@@ -34,60 +34,60 @@ class Checkout extends Component
                 ->where('qr_code_token', $this->tableToken)
                 ->first();
         }
+
+        // Load cart from session (format: [itemId => ['qty', 'name', 'price', 'image']])
+        $this->cart = session('cart_' . $this->restaurant->id, []);
     }
 
     public function placeOrder()
     {
         $this->validate();
 
-        // Check if cart is empty
         if (empty($this->cart)) {
             session()->flash('error', 'Cart is empty!');
             return;
         }
 
-        // Calculate totals
-        $subtotal = 0;
-        foreach ($this->cart as $item) {
-            $subtotal += ($item['price'] * $item['quantity']);
-        }
-        $total = $subtotal; // Add tax/service if needed
-
-        // Generate Order Number
-        $orderNumber = 'ORD-' . strtoupper(uniqid());
+        // Calculate total
+        $total = array_sum(array_map(fn($i) => $i['qty'] * $i['price'], $this->cart));
 
         // Create Order
         $order = Order::withoutGlobalScopes()->create([
-            'restaurant_id' => $this->restaurant->id,
-            'table_id' => $this->table ? $this->table->id : null,
-            'order_number' => $orderNumber,
-            'customer_name' => $this->customerName,
+            'restaurant_id'  => $this->restaurant->id,
+            'table_id'       => $this->table ? $this->table->id : null,
+            'customer_name'  => $this->customerName,
             'customer_phone' => $this->customerPhone,
-            'total' => $total,
-            'status' => 'pending', // Awaiting confirmation/payment
+            'subtotal'       => $total,
+            'total'          => $total,
+            'status'         => 'pending',
             'payment_status' => 'unpaid',
-            'order_type' => $this->table ? 'dine_in' : 'takeaway',
+            'order_type'     => $this->table ? 'dine_in' : 'takeaway',
+            'source'         => 'qr',
         ]);
 
-        // Create Order Items
-        foreach ($this->cart as $item) {
+        // Create Order Items — use correct column names from migration
+        foreach ($this->cart as $itemId => $item) {
             OrderItem::withoutGlobalScopes()->create([
-                'order_id' => $order->id,
-                'menu_item_id' => $item['id'],
-                'quantity' => $item['quantity'],
-                'unit_price' => $item['price'],
-                'subtotal' => $item['price'] * $item['quantity'],
-                'notes' => $item['notes'] ?? null,
-                'variants' => $item['variants'] ?? null,
-                'addons' => $item['addons'] ?? null,
+                'order_id'        => $order->id,
+                'menu_item_id'    => (int) $itemId,
+                'qty'             => $item['qty'],
+                'price_at_order'  => $item['price'],
+                'notes'           => null,
+                'selected_variant'=> null,
+                'selected_addons' => null,
             ]);
         }
 
-        // Clear cart
+        // Clear cart from session
+        session()->forget('cart_' . $this->restaurant->id);
         $this->cart = [];
-        
-        session()->flash('success', 'Order placed successfully! Your order number is ' . $orderNumber);
-        return redirect()->route('customer.menu', ['slug' => $this->restaurant->slug, 'token' => $this->tableToken]);
+
+        session()->flash('success', 'Order placed successfully! Please wait for confirmation.');
+
+        $routeParams = ['slug' => $this->restaurant->slug];
+        if ($this->tableToken) $routeParams['token'] = $this->tableToken;
+
+        return redirect()->route('customer.menu', $routeParams);
     }
 
     public function render()
