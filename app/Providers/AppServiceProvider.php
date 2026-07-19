@@ -39,5 +39,14 @@ class AppServiceProvider extends ServiceProvider
             config(['app.url' => 'https://' . request()->getHost()]);
         }
 
+        // Auto-create storage symlink if it doesn't exist (crucial for Docker/Railway)
+        if (!file_exists(public_path('storage'))) {
+            try {
+                app('files')->link(storage_path('app/public'), public_path('storage'));
+            } catch (\Exception $e) {
+                // Fail silently if permission denied, though Nixpacks usually allows it
+            }
+        }
+
     }
 }
