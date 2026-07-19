@@ -30,7 +30,6 @@ class PaymentsTable
             ])
             ->recordActions([
                 ViewAction::make(),
-                Filament\Actions\ViewAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
