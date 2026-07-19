@@ -13,4 +13,5 @@ class MenuCategory extends Model
     protected $guarded = ['id'];
 
     public function items() { return $this->hasMany(MenuItem::class, 'category_id'); }
+    public function menuItems() { return $this->hasMany(MenuItem::class, 'category_id'); }
 }
