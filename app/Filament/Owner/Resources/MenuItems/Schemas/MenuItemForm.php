@@ -21,7 +21,7 @@ class MenuItemForm
                 Textarea::make('description'),
                 TextInput::make('price')->numeric()->required(),
                 TextInput::make('cost_price')->numeric(),
-                FileUpload::make('image')->image()->directory('menu-items')->disk('public'),
+                FileUpload::make('image')->image()->directory('menu-items')->visibility('private'),
                 Toggle::make('is_available')->default(true),
                 Repeater::make('variants')->schema([
                     TextInput::make('name')->required(),

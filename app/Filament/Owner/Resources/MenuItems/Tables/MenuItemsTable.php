@@ -16,7 +16,7 @@ class MenuItemsTable
     {
         return $table
             ->columns([
-                ImageColumn::make('image')->disk('public'),
+                ImageColumn::make('image')->visibility('private'),
                 TextColumn::make('name')->searchable(),
                 TextColumn::make('category.name')->sortable(),
                 TextColumn::make('price')->money('idr')->sortable(),

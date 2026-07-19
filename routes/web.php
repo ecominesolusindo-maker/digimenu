@@ -27,11 +27,11 @@ Route::post('/api/webhooks/midtrans', [\App\Http\Controllers\Api\PaymentWebhookC
 // Subscription Expired Page
 Route::view('/subscription-expired', 'subscription-expired')->name('subscription.expired');
 
-// Fallback for Railway Symlink Issues: Serve storage files directly via PHP if Nginx can't find the symlink
-Route::get('/storage/{path}', function ($path) {
+// Bulletproof route to serve images, bypassing any Nginx symlink interference
+Route::get('/menu-image/{path}', function ($path) {
     $publicPath = storage_path('app/public/' . $path);
-    $privatePath = storage_path('app/private/' . $path); // Laravel 11 local disk
-    $legacyPath = storage_path('app/' . $path); // Laravel 10 local disk
+    $privatePath = storage_path('app/private/' . $path); 
+    $legacyPath = storage_path('app/' . $path);
     
     if (file_exists($publicPath)) {
         return response()->file($publicPath);
@@ -42,4 +42,4 @@ Route::get('/storage/{path}', function ($path) {
     }
     
     abort(404);
-})->where('path', '.*');
+})->where('path', '.*')->name('menu.image');
