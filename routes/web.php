@@ -29,10 +29,16 @@ Route::view('/subscription-expired', 'subscription-expired')->name('subscription
 
 // Fallback for Railway Symlink Issues: Serve storage files directly via PHP if Nginx can't find the symlink
 Route::get('/storage/{path}', function ($path) {
-    $filePath = storage_path('app/public/' . $path);
+    $publicPath = storage_path('app/public/' . $path);
+    $privatePath = storage_path('app/private/' . $path); // Laravel 11 local disk
+    $legacyPath = storage_path('app/' . $path); // Laravel 10 local disk
     
-    if (file_exists($filePath)) {
-        return response()->file($filePath);
+    if (file_exists($publicPath)) {
+        return response()->file($publicPath);
+    } elseif (file_exists($privatePath)) {
+        return response()->file($privatePath);
+    } elseif (file_exists($legacyPath)) {
+        return response()->file($legacyPath);
     }
     
     abort(404);
