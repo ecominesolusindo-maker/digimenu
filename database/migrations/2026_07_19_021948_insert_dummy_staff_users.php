@@ -11,17 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Pastikan role Spatie ada sebelum di-assign
+        $roleCashier = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'Cashier', 'guard_name' => 'web']);
+        $roleKitchen = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'Kitchen', 'guard_name' => 'web']);
+
         $c = \App\Models\User::firstOrCreate(
             ['email' => 'cashier@restosaas.com'], 
             ['name' => 'Cashier', 'password' => \Illuminate\Support\Facades\Hash::make('password'), 'role' => 'cashier', 'restaurant_id' => 1]
         );
-        $c->assignRole('Cashier');
+        $c->assignRole($roleCashier);
 
         $k = \App\Models\User::firstOrCreate(
             ['email' => 'kitchen@restosaas.com'], 
             ['name' => 'Kitchen Staff', 'password' => \Illuminate\Support\Facades\Hash::make('password'), 'role' => 'kitchen', 'restaurant_id' => 1]
         );
-        $k->assignRole('Kitchen');
+        $k->assignRole($roleKitchen);
     }
 
     /**
