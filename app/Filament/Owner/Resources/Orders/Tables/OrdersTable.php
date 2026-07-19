@@ -18,12 +18,18 @@ class OrdersTable
                 TextColumn::make('order_number')->searchable(),
                 TextColumn::make('customer_name')->searchable(),
                 TextColumn::make('order_type')->badge(),
-                TextColumn::make('status')->badge()->color(fn (string $state): string => match ($state) {
+                TextColumn::make('status')->label('Kitchen Status')->badge()->color(fn (string $state): string => match ($state) {
                     'pending' => 'warning',
                     'preparing' => 'primary',
                     'ready' => 'success',
                     'served' => 'gray',
+                    'completed' => 'gray',
                     default => 'gray',
+                }),
+                TextColumn::make('payment_status')->label('Payment')->badge()->color(fn (string $state): string => match ($state) {
+                    'paid' => 'success',
+                    'unpaid' => 'danger',
+                    default => 'warning',
                 }),
                 TextColumn::make('total')->money('idr')->sortable()->label('Total'),
                 TextColumn::make('created_at')->dateTime()->sortable(),
