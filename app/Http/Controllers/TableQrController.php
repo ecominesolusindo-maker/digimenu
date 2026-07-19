@@ -23,16 +23,16 @@ class TableQrController extends Controller
         // Buat URL untuk scan
         $url = url("/menu/{$restaurant->slug}/{$table->qr_code_token}");
 
-        // Generate QR code (kembalikan string SVG atau PNG)
-        $qr = QrCode::format('png')
+        // Generate QR code as SVG (no imagick required)
+        $qr = QrCode::format('svg')
             ->size(500)
             ->margin(2)
             ->generate($url);
 
         // Download Response
         return Response::make($qr, 200, [
-            'Content-Type' => 'image/png',
-            'Content-Disposition' => 'attachment; filename="qr_table_' . $table->table_number . '.png"',
+            'Content-Type' => 'image/svg+xml',
+            'Content-Disposition' => 'attachment; filename="qr_table_' . $table->table_number . '.svg"',
         ]);
     }
 }
