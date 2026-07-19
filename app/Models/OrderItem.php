@@ -15,4 +15,9 @@ class OrderItem extends Model
 
     public function order() { return $this->belongsTo(Order::class); }
     public function menuItem() { return $this->belongsTo(MenuItem::class); }
+
+    public function getSubtotalAttribute()
+    {
+        return $this->qty * $this->price_at_order;
+    }
 }

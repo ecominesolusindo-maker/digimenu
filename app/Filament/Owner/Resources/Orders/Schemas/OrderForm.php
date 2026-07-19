@@ -20,7 +20,7 @@ class OrderForm
                     ->relationship('orderItems')
                     ->schema([
                         TextInput::make('menuItem.name')->label('Item'),
-                        TextInput::make('quantity'),
+                        TextInput::make('qty')->label('Quantity'),
                         TextInput::make('subtotal'),
                     ])
                     ->columnSpanFull(),
