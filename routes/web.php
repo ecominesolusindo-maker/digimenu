@@ -26,3 +26,14 @@ Route::post('/api/webhooks/midtrans', [\App\Http\Controllers\Api\PaymentWebhookC
 
 // Subscription Expired Page
 Route::view('/subscription-expired', 'subscription-expired')->name('subscription.expired');
+
+// Fallback for Railway Symlink Issues: Serve storage files directly via PHP if Nginx can't find the symlink
+Route::get('/storage/{path}', function ($path) {
+    $filePath = storage_path('app/public/' . $path);
+    
+    if (file_exists($filePath)) {
+        return response()->file($filePath);
+    }
+    
+    abort(404);
+})->where('path', '.*');
