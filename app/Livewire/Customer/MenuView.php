@@ -111,6 +111,8 @@ class MenuView extends Component
 
         return view('livewire.customer.menu-view', [
             'categories' => $categories,
+            'cartCount'  => $this->cartCount,
+            'cartTotal'  => $this->cartTotal,
         ])->layout('components.layouts.customer');
     }
 }
