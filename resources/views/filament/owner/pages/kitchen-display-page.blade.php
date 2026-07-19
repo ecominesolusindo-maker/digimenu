@@ -1,6 +1,6 @@
 <x-filament-panels::page>
     <div wire:poll.5s>
-        <x-filament::grid default="1" md="2" lg="3" xl="4" class="gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             @forelse($orders as $order)
                 <x-filament::section>
                     <x-slot name="heading">
@@ -54,6 +54,6 @@
                     <p class="text-gray-400">No active orders in the kitchen.</p>
                 </div>
             @endforelse
-        </x-filament::grid>
+        </div>
     </div>
 </x-filament-panels::page>
